@@ -20,7 +20,22 @@ import com.example.jobportal.utility.ErrorStructure;
 @RestControllerAdvice
 public class ApplicationHandler extends ResponseEntityExceptionHandler{
 
-
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		
+		List<ObjectError> list=ex.getAllErrors();
+		HashMap<String, String> errorMap=new HashMap<>();
+		for(ObjectError error:list)
+		{
+			FieldError fieldError=(FieldError) error;
+			String fieldName=fieldError.getField();
+			String message=error.getDefaultMessage();
+			errorMap.put(fieldName, message);
+		}
+		return new ResponseEntity<>(errorMap, headers, status);
+	}
+	
 	@ExceptionHandler(RoleNotPresentException.class)
 	public ResponseEntity<ErrorStructure> roleNotFound(RoleNotPresentException exception) {
 
@@ -43,19 +58,115 @@ public class ApplicationHandler extends ResponseEntityExceptionHandler{
 		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
 	}
 	
-	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+	@ExceptionHandler(BusinessTypeNotPresentException.class)
+	public ResponseEntity<ErrorStructure> businessNotFound(BusinessTypeNotPresentException exception) {
 		
-		List<ObjectError> list=ex.getAllErrors();
-		HashMap<String, String> errorMap=new HashMap<>();
-		for(ObjectError error:list)
-		{
-			FieldError fieldError=(FieldError) error;
-			String fieldName=fieldError.getField();
-			String message=error.getDefaultMessage();
-			errorMap.put(fieldName, message);
-		}
-		return new ResponseEntity<>(errorMap, headers, status);
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Business type not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
 	}
+	
+	@ExceptionHandler(UnauthorizedAccessByUserException.class)
+	public ResponseEntity<ErrorStructure> unauthorizedAccessByUser(UnauthorizedAccessByUserException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Not authorised");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler(CompanyNotFoundByIdException.class)
+	public ResponseEntity<ErrorStructure> companyNotFoundById(CompanyNotFoundByIdException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Company not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(CompanyNotFoundByNameException.class)
+	public ResponseEntity<ErrorStructure> companyNotFoundByName(CompanyNotFoundByNameException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Company not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(CompaniesNotPresentException.class)
+	public ResponseEntity<ErrorStructure> companiesNotPresent(CompaniesNotPresentException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Companies not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(JobNotFoundByIdException.class)
+	public ResponseEntity<ErrorStructure> jobNotFoundById(JobNotFoundByIdException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Job not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(JobNotFoundByTitleException.class)
+	public ResponseEntity<ErrorStructure> jobNotFoundByName(JobNotFoundByTitleException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Job not found for the mentioned job title");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	
+	}
+	
+	@ExceptionHandler(JobNotFoundByLocationException.class)
+	public ResponseEntity<ErrorStructure> jobNotFoundByLocation(JobNotFoundByLocationException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Job not found at this location");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(JobNotFoundByPackageException.class)
+	public ResponseEntity<ErrorStructure> jobNotFoundByPackage(JobNotFoundByPackageException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Job not found for this package");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(ResumeNotFoundByIdException.class)
+	public ResponseEntity<ErrorStructure> resumeNotFoundById(ResumeNotFoundByIdException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Resume not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
 }

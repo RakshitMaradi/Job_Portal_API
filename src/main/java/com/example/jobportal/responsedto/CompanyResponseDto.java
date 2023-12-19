@@ -1,20 +1,11 @@
-package com.example.jobportal.entity;
+package com.example.jobportal.responsedto;
 
 import java.time.LocalDate;
-import java.util.List;
-import com.example.jobportal.enums.BusinessType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 
-@Entity
-public class Company {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+import com.example.jobportal.enums.BusinessType;
+
+public class CompanyResponseDto {
+
 	private int companyId;
 	private String companyName;
 	private LocalDate foundedDate;
@@ -24,24 +15,6 @@ public class Company {
 	private long contactPhNo;
 	private String website;
 	
-	@ManyToOne
-	private User user;
-	
-	@OneToMany (mappedBy = "company")
-	private List<Job> jobList;
-	
-	public User getUser() {
-		return user;
-	}
-	public void setUser(User user) {
-		this.user = user;
-	}
-	public List<Job> getJobList() {
-		return jobList;
-	}
-	public void setJobList(List<Job> jobList) {
-		this.jobList = jobList;
-	}
 	public int getCompanyId() {
 		return companyId;
 	}
@@ -90,5 +63,5 @@ public class Company {
 	public void setWebsite(String website) {
 		this.website = website;
 	}
-
+	
 }

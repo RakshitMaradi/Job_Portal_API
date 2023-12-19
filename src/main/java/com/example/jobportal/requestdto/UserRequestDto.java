@@ -21,6 +21,7 @@ public class UserRequestDto {
 	@NotNull(message = "Password cannot be null")
 	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "8 characters mandatory(Include atleast 1 upperCase,1 lowerCase,1 special Character,1 number)")	
 	private String password;
+	
 	public String getUsername() {
 		return username;
 	}

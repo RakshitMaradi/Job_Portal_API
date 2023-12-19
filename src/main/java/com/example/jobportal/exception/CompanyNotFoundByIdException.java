@@ -1,10 +1,10 @@
 package com.example.jobportal.exception;
 
-public class RoleNotPresentException extends RuntimeException{
-	
+public class CompanyNotFoundByIdException extends RuntimeException{
+
 	String message;
 
-	public RoleNotPresentException(String message) {
+	public CompanyNotFoundByIdException(String message) {
 		super();
 		this.message = message;
 	}

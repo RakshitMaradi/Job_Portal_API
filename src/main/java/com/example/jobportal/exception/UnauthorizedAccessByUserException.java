@@ -1,10 +1,10 @@
 package com.example.jobportal.exception;
 
-public class RoleNotPresentException extends RuntimeException{
+public class UnauthorizedAccessByUserException extends RuntimeException{
 	
 	String message;
 
-	public RoleNotPresentException(String message) {
+	public UnauthorizedAccessByUserException(String message) {
 		super();
 		this.message = message;
 	}
@@ -16,5 +16,5 @@ public class RoleNotPresentException extends RuntimeException{
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
+
 }
