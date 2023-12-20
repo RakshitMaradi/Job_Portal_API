@@ -11,7 +11,7 @@ public class Resume {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int resumeId;
-	private String Objective;
+	private String objective;
 
 	public int getResumeId() {
 		return resumeId;
@@ -20,9 +20,9 @@ public class Resume {
 		this.resumeId = resumeId;
 	}
 	public String getObjective() {
-		return Objective;
+		return objective;
 	}
 	public void setObjective(String objective) {
-		Objective = objective;
+		this.objective = objective;
 	}
 }

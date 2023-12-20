@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class User {
@@ -25,8 +24,8 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	private List<Company> companyList;		                //only employer can add multiple companies
 	
-	@OneToOne(mappedBy = "userType")		                //only applicant can have one resume
-	private Resume resume;
+//	@OneToOne(mappedBy = "userType")		                //only applicant can have one resume
+//	private Resume resume;
 	
 	@OneToMany
 	private List<JobApplication> jobApplicationList;		//only applicant can have the resume
@@ -36,12 +35,6 @@ public class User {
 	}
 	public void setCompanyList(List<Company> companyList) {
 		this.companyList = companyList;
-	}
-	public Resume getResume() {
-		return resume;
-	}
-	public void setResume(Resume resume) {
-		this.resume = resume;
 	}
 	public List<JobApplication> getJobApplicationList() {
 		return jobApplicationList;

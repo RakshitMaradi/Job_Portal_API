@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public class ResumeRequestDto {
 
-	
 	@NotBlank(message = "Objective cannot be blank")
 	@NotNull(message = "Objective cannot be null")
 	private String objective;

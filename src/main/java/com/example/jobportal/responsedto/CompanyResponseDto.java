@@ -13,7 +13,7 @@ public class CompanyResponseDto {
 	private BusinessType businessType;
 	private String contactEmail;
 	private long contactPhNo;
-	private String website;
+	private String website;	
 	
 	public int getCompanyId() {
 		return companyId;

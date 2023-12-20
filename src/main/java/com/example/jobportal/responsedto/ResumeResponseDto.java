@@ -3,7 +3,7 @@ package com.example.jobportal.responsedto;
 public class ResumeResponseDto {
 
 	private int resumeId;
-	private String Objective;
+	private String objective;
 
 	public int getResumeId() {
 		return resumeId;
@@ -12,9 +12,9 @@ public class ResumeResponseDto {
 		this.resumeId = resumeId;
 	}
 	public String getObjective() {
-		return Objective;
+		return objective;
 	}
 	public void setObjective(String objective) {
-		Objective = objective;
+		this.objective = objective;
 	}
 }

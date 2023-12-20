@@ -1,8 +1,7 @@
 package com.example.jobportal.requestdto;
 
-import java.util.List;
-
 import com.example.jobportal.entity.Company;
+import com.example.jobportal.enums.JobStatus;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,23 +12,26 @@ public class JobRequestDto {
 	@NotNull(message = "Job title cannot be null")
 	private String jobTitle;
 	
-	@NotBlank(message = "Package cannot be blank")
 	@NotNull(message = "Package cannot be null")
-	private long jobPackage;
+	@NotNull(message = "Location cannot be null")
+	private String jobPackage;
 	
 	@NotBlank(message = "Location cannot be blank")
 	@NotNull(message = "Location cannot be null")
 	private String jobLocation;
 	
-	@NotBlank(message = "Skills cannot be blank")
-	@NotNull(message = "Skills cannot be null")
-	private List<String> jobSkills;
-	
-//	@NotBlank(message = "Location cannot be blank")
-//	@NotNull(message = "Location cannot be null")
+	@NotBlank(message = "Experience cannot be blank")
+	@NotNull(message = "Experience cannot be null")
 	private String jobExperienceRequired;
 	
+	private JobStatus jobStatus;
 	
+	public JobStatus getJobStatus() {
+		return jobStatus;
+	}
+	public void setJobStatus(JobStatus jobStatus) {
+		this.jobStatus = jobStatus;
+	}
 	private Company company;
 	
 	public String getJobTitle() {
@@ -38,10 +40,11 @@ public class JobRequestDto {
 	public void setJobTitle(String jobTitle) {
 		this.jobTitle = jobTitle;
 	}
-	public long getJobPackage() {
+
+	public String getJobPackage() {
 		return jobPackage;
 	}
-	public void setJobPackage(long jobPackage) {
+	public void setJobPackage(String jobPackage) {
 		this.jobPackage = jobPackage;
 	}
 	public String getJobLocation() {
@@ -50,12 +53,7 @@ public class JobRequestDto {
 	public void setJobLocation(String jobLocation) {
 		this.jobLocation = jobLocation;
 	}
-	public List<String> getJobSkills() {
-		return jobSkills;
-	}
-	public void setJobSkills(List<String> jobSkills) {
-		this.jobSkills = jobSkills;
-	}
+
 	public String getJobExperienceRequired() {
 		return jobExperienceRequired;
 	}

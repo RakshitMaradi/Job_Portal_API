@@ -23,30 +23,30 @@ public class ResumeController {
 	@Autowired
 	ResumeService resumeService;
 
-	@PostMapping("/resumes/users/{userid}")
+	@PostMapping("/resumes/users/{userId}")
 	public ResponseEntity<ResponseStructure<ResumeResponseDto>> insert(@PathVariable int userId,
 			@RequestBody @Valid ResumeRequestDto resumeRequest)
 	{
 		return resumeService.insertResume(resumeRequest,userId);
 	}
 	
-	@PutMapping("/resumes/users/{userid}")
+	@PutMapping("/users/{userId}/resumes")
 	public ResponseEntity<ResponseStructure<ResumeResponseDto>> update(@PathVariable int userId,
 			@RequestBody @Valid ResumeRequestDto resumeRequest)
 	{
 		return resumeService.updateResume(resumeRequest,userId);
 	}
 	
-	@GetMapping("/resumes/{resumeId}")
-	public ResponseEntity<ResponseStructure<ResumeResponseDto>> findById(@PathVariable int resumeId)
+	@GetMapping("/users/{userId}/resumes/{resumeId}")
+	public ResponseEntity<ResponseStructure<ResumeResponseDto>> findById(@PathVariable int resumeId,@PathVariable int userId)
 	{
-		return resumeService.findResumeById(resumeId);
+		return resumeService.findResumeById(resumeId,userId);
 	}
 
-	@DeleteMapping("/resumes/{resumeId}")
-	public ResponseEntity<ResponseStructure<ResumeResponseDto>> deleteById(@PathVariable int resumeId)
+	@DeleteMapping("/users/{userId}/resumes/{resumeId}")
+	public ResponseEntity<ResponseStructure<ResumeResponseDto>> deleteById(@PathVariable int resumeId,int userId)
 	{
-		return resumeService.deleteResumeById(resumeId);
+		return resumeService.deleteResumeById(resumeId,userId);
 	}
 	
 }

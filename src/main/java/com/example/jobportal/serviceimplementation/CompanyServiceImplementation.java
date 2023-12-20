@@ -1,5 +1,6 @@
 package com.example.jobportal.serviceimplementation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,8 +12,7 @@ import org.springframework.stereotype.Service;
 import com.example.jobportal.entity.Company;
 import com.example.jobportal.entity.User;
 import com.example.jobportal.enums.BusinessType;
-import com.example.jobportal.exception.BusinessTypeNotPresentException;
-import com.example.jobportal.exception.CompaniesNotPresentException;
+import com.example.jobportal.enums.UserRole;
 import com.example.jobportal.exception.CompanyNotFoundByIdException;
 import com.example.jobportal.exception.CompanyNotFoundByNameException;
 import com.example.jobportal.exception.UnauthorizedAccessByUserException;
@@ -27,17 +27,15 @@ import com.example.jobportal.utility.ResponseStructure;
 import jakarta.validation.Valid;
 
 @Service
-public class CompanyServiceImplementation implements CompanyService
-{
+public class CompanyServiceImplementation implements CompanyService {
 	@Autowired
 	CompanyRepository companyRepository;
 
 	@Autowired
 	UserRepository userRepository;
-	
-	private Company convertToCompany(CompanyRequestDto companyRequest,BusinessType businessType)
-	{
-		Company company=new Company();
+
+	private Company convertToCompany(CompanyRequestDto companyRequest, BusinessType businessType) {
+		Company company = new Company();
 		company.setBusinessType(businessType);
 		company.setCompanyName(companyRequest.getCompanyName());
 		company.setContactEmail(companyRequest.getContactEmail());
@@ -49,12 +47,12 @@ public class CompanyServiceImplementation implements CompanyService
 		return company;
 	}
 
-	private CompanyResponseDto convertToCompanyResponseDto(Company company)
-	{
-		CompanyResponseDto companyResponseDto=new CompanyResponseDto();
+	private CompanyResponseDto convertToCompanyResponseDto(Company company) {
+		CompanyResponseDto companyResponseDto = new CompanyResponseDto();
 		companyResponseDto.setBusinessType(company.getBusinessType());
 		companyResponseDto.setCompanyId(company.getCompanyId());
 		companyResponseDto.setCompanyName(company.getCompanyName());
+		companyResponseDto.setFoundedDate(company.getFoundedDate());
 		companyResponseDto.setContactEmail(company.getContactEmail());
 		companyResponseDto.setContactPhNo(company.getContactPhNo());
 		companyResponseDto.setDescription(company.getDescription());
@@ -64,40 +62,30 @@ public class CompanyServiceImplementation implements CompanyService
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<CompanyResponseDto>> insertCompany(
-			@Valid CompanyRequestDto companyRequest, int userId, BusinessType businessType)
-	{
-		Optional<User> optional = userRepository.findById(userId);
-		User user = optional.get();
-		if(optional.isPresent())
-		{
-			if(user.getUserrole()!=null)
+	public ResponseEntity<ResponseStructure<CompanyResponseDto>> insertCompany(@Valid CompanyRequestDto companyRequest,
+			int userId, BusinessType businessType) {
+		
+		User user = userRepository.findById(userId)
+			    .orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
+	
+		UserRole userrole = user.getUserrole();
+		
+			if (userrole.equals(UserRole.EMPLOYER)) 
 			{
-				if(businessType!=null)
-				{
-					Company company = companyRepository.save(convertToCompany(companyRequest, businessType));
-					CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
-					ResponseStructure<CompanyResponseDto> responseStructure=new ResponseStructure<>();
-					responseStructure.setData(companyResponse);
-					responseStructure.setMessage("Company inserted successfully");
-					responseStructure.setStatusCode(HttpStatus.CREATED.value());
+				Company company = convertToCompany(companyRequest, businessType);
+				company.setUser(user);
+				companyRepository.save(company);
+				CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
+				ResponseStructure<CompanyResponseDto> responseStructure = new ResponseStructure<>();
+				responseStructure.setData(companyResponse);
+				responseStructure.setMessage("Company inserted successfully");
+				responseStructure.setStatusCode(HttpStatus.CREATED.value());
 
-					return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.CREATED);
-				}
-				else
-				{
-					throw new BusinessTypeNotPresentException("No such Business type exist");
-				}
+				return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.CREATED);
+			} else {
+				throw new UnauthorizedAccessByUserException("Not authorised to access this option");
 			}
-			else
-			{
-				throw new UnauthorizedAccessByUserException("Not authorised to access this option");			
-			}
-		}
-		else
-		{
-			throw new UserNotFoundByIdException("User with this id is not present");
-		}
+		
 	}
 
 	@Override
@@ -105,115 +93,103 @@ public class CompanyServiceImplementation implements CompanyService
 
 		Optional<Company> optional = companyRepository.findById(companyId);
 
-		if(optional.isPresent())
-		{
+		if (optional.isPresent()) {
 			Company company = optional.get();
 			CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
-			ResponseStructure<CompanyResponseDto> responseStructure=new ResponseStructure<>();
+			ResponseStructure<CompanyResponseDto> responseStructure = new ResponseStructure<>();
 			responseStructure.setData(companyResponse);
 			responseStructure.setMessage("Company found successfully");
 			responseStructure.setStatusCode(HttpStatus.OK.value());
 
 			return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.OK);
-		}
-		else
-		{
-			throw new CompanyNotFoundByIdException("No company present with the is"+companyId);
+		} else {
+			throw new CompanyNotFoundByIdException("No company present with the is " + companyId);
 		}
 	}
 
-
 	@Override
-	public ResponseEntity<ResponseStructure<CompanyResponseDto>> findCompanyByName(String companyName) {
+	public ResponseEntity<ResponseStructure<List<CompanyResponseDto>>> findCompanyByName(String companyName) {
 
-	    List<Company> companyList = companyRepository.findAll(); 
-	    
-	    if(companyList!=null)
-	    {
-	    	for(Company company:companyList)
-	    	{
-	    		if(company.getCompanyName().equalsIgnoreCase(companyName))
-	    		{
-	    			CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
-	    			ResponseStructure<CompanyResponseDto> responseStructure=new ResponseStructure<>();
-	    			responseStructure.setData(companyResponse);
-	    			responseStructure.setMessage("Company found successfully");
-	    			responseStructure.setStatusCode(HttpStatus.OK.value());
+		List<Company> companyList = companyRepository.findByCompanyName(companyName);
 
-	    			return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.OK);
-	    		}
-	    	}
-	    	throw new CompanyNotFoundByNameException("No company found with this name");
-	    }
-	    else
-	    {
-	    	throw new CompaniesNotPresentException("Companies are not present in database");
-	    }
+		if (companyList != null) {
+			List<CompanyResponseDto> companyResponseList = new ArrayList<>();
+			for (Company company : companyList) {
+				CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
+				companyResponseList.add(companyResponse);
+			}
+
+			ResponseStructure<List<CompanyResponseDto>> responseStructure = new ResponseStructure<>();
+			responseStructure.setData(companyResponseList);
+			responseStructure.setMessage("Company found successfully");
+			responseStructure.setStatusCode(HttpStatus.OK.value());
+
+			return new ResponseEntity<ResponseStructure<List<CompanyResponseDto>>>(responseStructure, HttpStatus.OK);
+		} else {
+			throw new CompanyNotFoundByNameException("No company found with the name " + companyName);
+		}
 	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<CompanyResponseDto>> deleteCompanyById(int companyId, int userId) {
 
 		Optional<User> optional = userRepository.findById(userId);
-		
-		if(optional.isPresent())
-		{
-			Optional<Company> optional2 = companyRepository.findById(companyId);
-			if(optional2.isPresent())
-			{
-				Company company=optional2.get();
-				companyRepository.delete(company);
-				CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
-				ResponseStructure<CompanyResponseDto> responseStructure=new ResponseStructure<>();
-    			responseStructure.setData(companyResponse);
-    			responseStructure.setMessage("Company deleted succefully");
-    			responseStructure.setStatusCode(HttpStatus.OK.value());
+		if (optional.isPresent()) {
+			User user = optional.get();
+			if (user.getUserrole().equals(UserRole.EMPLOYER)) {
+				Optional<Company> optional2 = companyRepository.findById(companyId);
+				if (optional2.isPresent()) {
+					Company company = optional2.get();
+					companyRepository.delete(company);
+					CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
+					ResponseStructure<CompanyResponseDto> responseStructure = new ResponseStructure<>();
+					responseStructure.setData(companyResponse);
+					responseStructure.setMessage("Company deleted succefully");
+					responseStructure.setStatusCode(HttpStatus.OK.value());
 
-    			return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.OK);
+					return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.OK);
+				} else {
+					throw new CompanyNotFoundByIdException("No company present with the id " + companyId);
+				}
+			} else {
+				throw new UnauthorizedAccessByUserException("Not authorized to access this option");
 			}
-			else
-			{
-				throw new CompanyNotFoundByIdException("No company present with the id"+companyId);
-			}
+		} else {
+			throw new UserNotFoundByIdException("User not found with the id " + userId);
 		}
-		else
-		{
-			throw new UnauthorizedAccessByUserException("Not authorized to access this option");
-		}
+
 	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<CompanyResponseDto>> updateCompanyById(int companyId, int userId,
 			@Valid CompanyRequestDto companyRequest) {
 
-		Optional<User> userOptional = userRepository.findById(userId);
-		if(userOptional.isPresent())
-		{
-			Optional<Company> companyOptional = companyRepository.findById(companyId);
-			if(companyOptional.isPresent())
-			{
-				Company existingCompany = companyOptional.get();
-				Company updatedCompany = convertToCompany(companyRequest,companyRequest.getBusinessType());
-				updatedCompany.setCompanyId(existingCompany.getCompanyId());
-				CompanyResponseDto companyResponse = convertToCompanyResponseDto(updatedCompany);
-				
-				ResponseStructure<CompanyResponseDto> responseStructure=new ResponseStructure<>();
-    			responseStructure.setData(companyResponse);
-    			responseStructure.setMessage("Company details updated successfully");
-    			responseStructure.setStatusCode(HttpStatus.OK.value());
+		User user = userRepository.findById(userId)
+				    .orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
+		    //Used lamda expression for throwing exception
+			// User not found exception
 
-    			return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.OK);
-			}
-			else
-			{
-				throw new CompanyNotFoundByIdException("No company present with the id"+companyId);
-			}
-		}
-		else
+		if (user.getUserrole().equals(UserRole.EMPLOYER))   // checking if the user is an EMPLOYER
 		{
+			
+			Company existingCompany = companyRepository.findById(companyId)
+					.orElseThrow(() -> new CompanyNotFoundByIdException("No company present with the id " + companyId));
+			//Company not found exception
+			
+			Company updatedCompany = convertToCompany(companyRequest,companyRequest.getBusinessType());
+			updatedCompany.setCompanyId(existingCompany.getCompanyId());
+			companyRepository.save(updatedCompany);
+			CompanyResponseDto companyResponse = convertToCompanyResponseDto(updatedCompany);
+
+			ResponseStructure<CompanyResponseDto> responseStructure = new ResponseStructure<>();
+			responseStructure.setData(companyResponse);
+			responseStructure.setMessage("Company details updated successfully");
+			responseStructure.setStatusCode(HttpStatus.OK.value());
+
+			return new ResponseEntity<ResponseStructure<CompanyResponseDto>>(responseStructure, HttpStatus.OK);
+		} else {
 			throw new UnauthorizedAccessByUserException("Not authorized to access this option");
 		}
-	}
-	
 
+	}
 }

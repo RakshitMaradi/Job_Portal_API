@@ -1,7 +1,5 @@
 package com.example.jobportal.entity;
 
-import java.util.List;
-
 import com.example.jobportal.enums.JobStatus;
 
 import jakarta.persistence.Entity;
@@ -17,9 +15,8 @@ public class Job {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int jobId;
 	private String jobTitle;
-	private long jobPackage;
+	private String jobPackage;
 	private String jobLocation;
-	private List<String> jobSkills;
 	private JobStatus jobStatus;
 	private String jobExperienceRequired;
 	
@@ -50,11 +47,12 @@ public class Job {
 		this.jobTitle = jobTitle;
 	}
 
-	public long getJobPackage() {
+
+	public String getJobPackage() {
 		return jobPackage;
 	}
 
-	public void setJobPackage(long jobPackage) {
+	public void setJobPackage(String jobPackage) {
 		this.jobPackage = jobPackage;
 	}
 
@@ -64,14 +62,6 @@ public class Job {
 
 	public void setJobLocation(String jobLocation) {
 		this.jobLocation = jobLocation;
-	}
-
-	public List<String> getJobSkills() {
-		return jobSkills;
-	}
-
-	public void setJobSkills(List<String> jobSkills) {
-		this.jobSkills = jobSkills;
 	}
 
 	public String getJobExperienceRequired() {

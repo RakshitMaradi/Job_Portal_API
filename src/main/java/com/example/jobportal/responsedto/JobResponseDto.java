@@ -1,18 +1,33 @@
 package com.example.jobportal.responsedto;
 
-import java.util.List;
 import java.util.Map;
+
+import com.example.jobportal.enums.JobStatus;
 
 public class JobResponseDto {
 
 	private int jobId;
 	private String jobTitle;
-	private long jobPackage;
+	private String jobPackage;
 	private String jobLocation;
-	private List<String> jobSkills;
 	private String jobExperienceRequired;
+	private JobStatus jobStatus;
 	private Map<String,String> companyOptions;
+
+	public JobStatus getJobStatus() {
+		return jobStatus;
+	}
+	public void setJobStatus(JobStatus jobStatus) {
+		this.jobStatus = jobStatus;
+	}
 	
+	public String getJobPackage() {
+		return jobPackage;
+	}
+	public void setJobPackage(String jobPackage) {
+		this.jobPackage = jobPackage;
+	}
+
 	public int getJobId() {
 		return jobId;
 	}
@@ -25,24 +40,13 @@ public class JobResponseDto {
 	public void setJobTitle(String jobTitle) {
 		this.jobTitle = jobTitle;
 	}
-	public long getJobPackage() {
-		return jobPackage;
-	}
-	public void setJobPackage(long jobPackage) {
-		this.jobPackage = jobPackage;
-	}
 	public String getJobLocation() {
 		return jobLocation;
 	}
 	public void setJobLocation(String jobLocation) {
 		this.jobLocation = jobLocation;
 	}
-	public List<String> getJobSkills() {
-		return jobSkills;
-	}
-	public void setJobSkills(List<String> jobSkills) {
-		this.jobSkills = jobSkills;
-	}
+
 	public String getJobExperienceRequired() {
 		return jobExperienceRequired;
 	}

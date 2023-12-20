@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 import com.example.jobportal.entity.Company;
 import com.example.jobportal.entity.Job;
 import com.example.jobportal.entity.User;
+import com.example.jobportal.enums.UserRole;
 import com.example.jobportal.exception.CompanyNotFoundByIdException;
 import com.example.jobportal.exception.JobNotFoundByIdException;
 import com.example.jobportal.exception.JobNotFoundByLocationException;
 import com.example.jobportal.exception.JobNotFoundByTitleException;
 import com.example.jobportal.exception.UnauthorizedAccessByUserException;
+import com.example.jobportal.exception.UserNotFoundByIdException;
 import com.example.jobportal.repository.CompanyRepository;
 import com.example.jobportal.repository.JobRepository;
 import com.example.jobportal.repository.UserRepository;
@@ -48,8 +50,8 @@ public class JobServiceImplementation implements JobService{
 		job.setJobExperienceRequired(jobRequest.getJobExperienceRequired());
 		job.setJobLocation(jobRequest.getJobLocation());
 		job.setJobPackage(jobRequest.getJobPackage());
-		job.setJobSkills(jobRequest.getJobSkills());
 		job.setJobTitle(jobRequest.getJobTitle());
+		job.setJobStatus(jobRequest.getJobStatus());
 		return job;
 	}
 
@@ -61,23 +63,27 @@ public class JobServiceImplementation implements JobService{
 		jobResponseDto.setJobExperienceRequired(job.getJobExperienceRequired());
 		jobResponseDto.setJobLocation(job.getJobLocation());
 		jobResponseDto.setJobPackage(job.getJobPackage());
-		jobResponseDto.setJobSkills(job.getJobSkills());
 		jobResponseDto.setJobTitle(job.getJobTitle());
+		jobResponseDto.setJobStatus(job.getJobStatus());
 
 		return jobResponseDto;
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<JobResponseDto>> insertJob(@Valid JobRequestDto jobRequest,int companyId) 
+	public ResponseEntity<ResponseStructure<JobResponseDto>> insertJob(@Valid JobRequestDto jobRequest,int companyId,int userId) 
 	{
 
-		Optional<Company> optional = companyRepository.findById(companyId);
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
 
-		if(optional.isPresent())
-		{	
-			Company company = jobRequest.getCompany();
+		if(user.getUserrole().equals(UserRole.EMPLOYER))
+		{
+
+			Company company = companyRepository.findById(companyId)
+					.orElseThrow(() -> new CompanyNotFoundByIdException("No company present with the id " + companyId));
 
 			Job job = convertToJob(jobRequest);
+			job.setCompany(company);
 			jobRepository.save(job);
 			JobResponseDto jobResponse = convertJobResponseDto(job);
 
@@ -96,25 +102,25 @@ public class JobServiceImplementation implements JobService{
 		}
 		else
 		{
-			throw new CompanyNotFoundByIdException("Company not found the with id"+companyId);
+			throw new UnauthorizedAccessByUserException("Not allowed to access");
 		}
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<JobResponseDto>> deleteJob(int jobId) {
+	public ResponseEntity<ResponseStructure<JobResponseDto>> deleteJob(int jobId,int userId) {
 
-		Optional<Job> optional = jobRepository.findById(jobId);
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
 
-		if(optional.isPresent())
+		if(user.getUserrole().equals(UserRole.EMPLOYER))
 		{
-			Job job = optional.get();
+			Job job = jobRepository.findById(jobId).orElseThrow(() -> new JobNotFoundByIdException("Job not found with th id "+jobId));
 			jobRepository.delete(job);
 
 			Company company = job.getCompany();
 			JobResponseDto jobResponse = convertJobResponseDto(job);
 
 			String url="/companies/"+company.getCompanyId();
-
 			Map<String,String> companyOption=new HashMap<>();
 			companyOption.put("companyDetails",url);
 
@@ -126,11 +132,48 @@ public class JobServiceImplementation implements JobService{
 			responseStructure.setStatusCode(HttpStatus.OK.value());
 
 			return new ResponseEntity<ResponseStructure<JobResponseDto>>(responseStructure,HttpStatus.OK);
-
 		}
 		else
 		{
-			throw new JobNotFoundByIdException("Job not found with th id "+jobId);
+			throw new UnauthorizedAccessByUserException("Not allowed to access");
+		}
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<JobResponseDto>> updateJobById(int jobId, int userId,
+			@Valid JobRequestDto jobRequest) {
+
+		Optional<User> userOptional = userRepository.findById(userId);
+
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
+
+		if(userOptional.get().getUserrole().equals(UserRole.EMPLOYER))
+		{
+			Job existingJob = jobRepository.findById(jobId)
+					.orElseThrow(() -> new JobNotFoundByIdException("Job not found with th id "+jobId));
+			Job updatedJob = convertToJob(jobRequest);
+			updatedJob.setJobId(existingJob.getJobId());
+			updatedJob.setCompany(existingJob.getCompany());
+			jobRepository.save(updatedJob);
+
+			String url="/companies/"+existingJob.getCompany().getCompanyId();
+			Map<String,String> companyOption=new HashMap<>();
+			companyOption.put("companyDetails",url);
+
+			JobResponseDto jobResponse = convertJobResponseDto(updatedJob);
+			jobResponse.setCompanyOptions(companyOption);
+
+			ResponseStructure<JobResponseDto> responseStructure=new ResponseStructure<>();
+			responseStructure.setData(jobResponse);
+			responseStructure.setMessage("Job found successfully");
+			responseStructure.setStatusCode(HttpStatus.OK.value());
+
+			return new ResponseEntity<ResponseStructure<JobResponseDto>>(responseStructure,HttpStatus.OK);
+		}
+		else
+		{
+			throw new UnauthorizedAccessByUserException("Not allowed to access");
 		}
 	}
 
@@ -166,83 +209,43 @@ public class JobServiceImplementation implements JobService{
 			throw new JobNotFoundByIdException("Job not found with th id "+jobId);
 		}
 	}
-
-
 	@Override
-	public ResponseEntity<ResponseStructure<JobResponseDto>> updateJobById(int jobId, int userId,
-			@Valid JobRequestDto jobRequest) {
-
-		Optional<User> optional = userRepository.findById(userId);
-
-		if(optional.isPresent())
-		{
-			Optional<Job> optional2 = jobRepository.findById(jobId);
-			Job existingJob = optional2.get();
-			Job updatedJob = convertToJob(jobRequest);
-			updatedJob.setJobId(existingJob.getJobId());
-
-			Company company = updatedJob.getCompany();
-
-			String url="/companies/"+company.getCompanyId();
-			Map<String,String> companyOption=new HashMap<>();
-			companyOption.put("companyDetails",url);
-
-			JobResponseDto jobResponse = convertJobResponseDto(updatedJob);
-			jobResponse.setCompanyOptions(companyOption);
-
-			ResponseStructure<JobResponseDto> responseStructure=new ResponseStructure<>();
-			responseStructure.setData(jobResponse);
-			responseStructure.setMessage("Job found successfully");
-			responseStructure.setStatusCode(HttpStatus.OK.value());
-
-			return new ResponseEntity<ResponseStructure<JobResponseDto>>(responseStructure,HttpStatus.OK);
-		}
-		else
-		{
-			throw new UnauthorizedAccessByUserException("Not allowed to access");
-		}
-	}
-
-
-	@Override
-	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByName(String jobTitle) {
+	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByTitle(String jobTitle) {
 
 		List<Job> jobList = jobRepository.findByJobTitle(jobTitle);
-		if(jobList!=null)
-		{
-			List<JobResponseDto> jobResponseList=new ArrayList<>();
-			for(Job job:jobList)
-			{
-				Company company=job.getCompany();
-				JobResponseDto jobResponse=convertJobResponseDto(job);
 
-				String url="/companies/"+company.getCompanyId();
-				Map<String,String> companyOption=new HashMap<>();
-				companyOption.put("companyDetails",url);
+		if (!jobList.isEmpty()) {
+			List<JobResponseDto> jobResponseList = new ArrayList<>();
+
+			for (Job job : jobList) {
+				Company company = job.getCompany();
+				JobResponseDto jobResponse = convertJobResponseDto(job);
+
+				String url = "/companies/" + company.getCompanyId();
+				Map<String, String> companyOption = new HashMap<>();
+				companyOption.put("companyDetails", url);
 
 				jobResponse.setCompanyOptions(companyOption);
 				jobResponseList.add(jobResponse);
 			}
-			ResponseStructure<List<JobResponseDto>> responseStructure=new ResponseStructure<>();
+
+			ResponseStructure<List<JobResponseDto>> responseStructure = new ResponseStructure<>();
 			responseStructure.setData(jobResponseList);
 			responseStructure.setMessage("Job found successfully");
 			responseStructure.setStatusCode(HttpStatus.FOUND.value());
 
-			return new ResponseEntity<ResponseStructure<List<JobResponseDto>>>(responseStructure,HttpStatus.FOUND);
-		}
-		else
-		{
-			throw new JobNotFoundByTitleException("Job not found with the title"+jobTitle);
+			return new ResponseEntity<>(responseStructure, HttpStatus.FOUND);
+		} else {
+			throw new JobNotFoundByTitleException("Job not found with the title " + jobTitle);
 		}
 	}
-
 
 	@Override
 	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByLocation(String jobLocation) {
 
 		List<Job> jobList = jobRepository.findByJobLocation(jobLocation);
 
-		if(jobList!=null)
+		if(!jobList.isEmpty())
 		{
 			List<JobResponseDto> jobResponseList=new ArrayList<>();
 			for(Job job:jobList)
@@ -268,16 +271,16 @@ public class JobServiceImplementation implements JobService{
 		}
 		else
 		{
-			throw new JobNotFoundByLocationException("Job not found at the location"+jobLocation);
+			throw new JobNotFoundByLocationException("Job not found at the location "+jobLocation);
 		}
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByPackage(long jobPackage) {
+	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByPackage(String jobPackage) {
 
 		List<Job> jobList = jobRepository.findByJobPackage(jobPackage);
 
-		if(jobList!=null)
+		if(!jobList.isEmpty())
 		{
 			List<JobResponseDto> jobResponseList=new ArrayList<>();
 			for(Job job:jobList)
@@ -302,8 +305,7 @@ public class JobServiceImplementation implements JobService{
 		}
 		else
 		{
-			throw new JobNotFoundByLocationException("Job not found for the package of"+jobPackage);
+			throw new JobNotFoundByLocationException("Job not found for the package of "+jobPackage);
 		}
 	}
-
 }

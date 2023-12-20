@@ -7,6 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.example.jobportal.enums.BusinessType;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -32,8 +34,9 @@ public class CompanyRequestDto {
 	@Email(regexp = "[a-zA-Z0-9+_.-]+@[g][m][a][i][l]+.[c][o][m]", message = "invalid email--Should be in the extension of '@gmail.com' ")
 	private String contactEmail;
 	
-	@NotBlank(message = "Phone number cannot be blank")
-	@Pattern(regexp = "^\\d{10}$", message = "Invalid phone number format. It should be 10 digits.")
+	@NotNull(message = "Phone number cannot be null")
+    @Min(value = 5555555555L, message = "Phone number must be greater than or equal to 5555555555")
+    @Max(value = 9999999999L, message = "Phone number must be less than or equal to 9999999999")
 	private long contactPhNo;
 	
 	@NotBlank(message = "url cannot be blank")

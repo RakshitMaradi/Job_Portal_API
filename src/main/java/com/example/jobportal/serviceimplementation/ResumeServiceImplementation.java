@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.jobportal.entity.Resume;
 import com.example.jobportal.entity.User;
+import com.example.jobportal.enums.UserRole;
 import com.example.jobportal.exception.ResumeNotFoundByIdException;
 import com.example.jobportal.exception.UnauthorizedAccessByUserException;
+import com.example.jobportal.exception.UserNotFoundByIdException;
 import com.example.jobportal.repository.ResumeRepository;
 import com.example.jobportal.repository.UserRepository;
 import com.example.jobportal.requestdto.ResumeRequestDto;
@@ -48,9 +50,10 @@ public class ResumeServiceImplementation implements ResumeService
 	public ResponseEntity<ResponseStructure<ResumeResponseDto>> insertResume(@Valid ResumeRequestDto resumeRequest,
 			int userId) {
 
-		Optional<User> optional = userRepository.findById(userId);
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
 
-		if(optional.isPresent())
+		if(user.getUserrole().equals(UserRole.APPLICANT))
 		{
 			Resume resume = converToResume(resumeRequest);
 			resumeRepository.save(resume);
@@ -71,12 +74,16 @@ public class ResumeServiceImplementation implements ResumeService
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<ResumeResponseDto>> findResumeById(int resumeId) {
+	public ResponseEntity<ResponseStructure<ResumeResponseDto>> findResumeById(int resumeId,int userId) {
 
-		Optional<Resume> optional = resumeRepository.findById(resumeId);
-		if(optional.isPresent())
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
+
+		if(user.getUserrole().equals(UserRole.APPLICANT))
 		{
-			ResumeResponseDto resumeResponse = convertToResumeResponse(optional.get());
+			Resume resume = resumeRepository.findById(resumeId).orElseThrow(()->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
+
+			ResumeResponseDto resumeResponse = convertToResumeResponse(resume);
 
 			ResponseStructure<ResumeResponseDto> responseStructure=new ResponseStructure<>();
 			responseStructure.setData(resumeResponse);
@@ -87,30 +94,32 @@ public class ResumeServiceImplementation implements ResumeService
 		}
 		else
 		{
-			throw new ResumeNotFoundByIdException("Resume not found with id "+resumeId);
+			throw new UnauthorizedAccessByUserException("Not allowed to access");
 		}
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<ResumeResponseDto>> deleteResumeById(int resumeId) {
+	public ResponseEntity<ResponseStructure<ResumeResponseDto>> deleteResumeById(int resumeId,int userId) {
 
-		Optional<Resume> optional = resumeRepository.findById(resumeId);
-		if(optional.isPresent())
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
+
+		if(user.getUserrole().equals(UserRole.APPLICANT))
 		{
-			Resume resume = optional.get();
+			Resume resume = resumeRepository.findById(resumeId).orElseThrow(()->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
 			resumeRepository.delete(resume);
 			ResumeResponseDto resumeResponse = convertToResumeResponse(resume);
 
 			ResponseStructure<ResumeResponseDto> responseStructure=new ResponseStructure<>();
 			responseStructure.setData(resumeResponse);
 			responseStructure.setMessage("Resume deleted successfully");
-			responseStructure.setStatusCode(HttpStatus.FOUND.value());
+			responseStructure.setStatusCode(HttpStatus.OK.value());
 
-			return new ResponseEntity<ResponseStructure<ResumeResponseDto>>(responseStructure,HttpStatus.FOUND);
+			return new ResponseEntity<ResponseStructure<ResumeResponseDto>>(responseStructure,HttpStatus.OK);
 		}
 		else
 		{
-			throw new ResumeNotFoundByIdException("Resume  with id "+resumeId+ "not found to delete");
+			throw new UnauthorizedAccessByUserException("Not allowed to access");
 		}
 	}
 
@@ -139,5 +148,7 @@ public class ResumeServiceImplementation implements ResumeService
 			throw new UnauthorizedAccessByUserException("No access for this operation");
 		}
 	}
+
+
 
 }

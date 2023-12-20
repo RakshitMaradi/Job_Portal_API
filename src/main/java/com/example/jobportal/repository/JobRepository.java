@@ -14,5 +14,5 @@ public interface JobRepository extends JpaRepository<Job, Integer> {
 	
 	public List<Job> findByJobLocation(String jobLocation);
 	
-	public List<Job> findByJobPackage(long jobPackage);
+	public List<Job> findByJobPackage(String jobPackage);
 }

@@ -1,5 +1,7 @@
 package com.example.jobportal.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,8 +39,8 @@ public class CompanyContoller {
 		return companyService.findCompanyById(companyId);
 	}
 	
-	@GetMapping("/companies/{companyName}")
-	public ResponseEntity<ResponseStructure<CompanyResponseDto>> findByName(@PathVariable String companyName)
+	@GetMapping("/companies/companies-name/{companyName}")
+	public ResponseEntity<ResponseStructure<List<CompanyResponseDto>>> findByName(@PathVariable String companyName)
     {
 		return companyService.findCompanyByName(companyName);
 	}
@@ -48,13 +50,12 @@ public class CompanyContoller {
     {
 		return companyService.deleteCompanyById(companyId,userId);
 	}
-
 	
 	@PutMapping("users/{userId}/companies/{companyId}")
-	public ResponseEntity<ResponseStructure<CompanyResponseDto>> updateCompany(@PathVariable int companyid,@PathVariable int userId,
+	public ResponseEntity<ResponseStructure<CompanyResponseDto>> updateCompany(@PathVariable int companyId,@PathVariable int userId,
 			@RequestBody @Valid CompanyRequestDto companyRequest)
     {
-		return companyService.updateCompanyById(companyid,userId,companyRequest);
+		return companyService.updateCompanyById(companyId,userId,companyRequest);
 	}
 
 }

@@ -12,19 +12,20 @@ import jakarta.validation.Valid;
 
 public interface JobService {
 
-	ResponseEntity<ResponseStructure<JobResponseDto>> deleteJob(int jobId);
-
 	ResponseEntity<ResponseStructure<JobResponseDto>> updateJobById(int jobId, int userId,
 			@Valid JobRequestDto jobRequest);
 
-	ResponseEntity<ResponseStructure<JobResponseDto>> insertJob(@Valid JobRequestDto jobRequest, int companyId);
-	
 	ResponseEntity<ResponseStructure<JobResponseDto>> findJobById(int jobId);
 
-	ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByName(String jobTitle);
+	ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByTitle(String jobTitle);
 
 	ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByLocation(String jobLocation);
 
-	ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByPackage(long jobPackage);
+	ResponseEntity<ResponseStructure<List<JobResponseDto>>> findJobByPackage(String jobPackage);
+
+	ResponseEntity<ResponseStructure<JobResponseDto>> deleteJob(int jobId, int userId);
+
+	ResponseEntity<ResponseStructure<JobResponseDto>> insertJob(@Valid JobRequestDto jobRequest, int companyId,
+			int userId);
 	
 }

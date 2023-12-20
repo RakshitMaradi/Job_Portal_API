@@ -25,11 +25,11 @@ public class JobContoller {
 	@Autowired
 	JobService jobService;
 	
-	@PostMapping("/jobs/companies/{companyId}")
-	public ResponseEntity<ResponseStructure<JobResponseDto>> insert(@PathVariable int companyId,
+	@PostMapping("/users/{userId}/jobs/companies/{companyId}")
+	public ResponseEntity<ResponseStructure<JobResponseDto>> insert(@PathVariable int companyId,@PathVariable int userId,
 			@RequestBody @Valid JobRequestDto jobRequest)
 	{
-		return jobService.insertJob(jobRequest,companyId);
+		return jobService.insertJob(jobRequest,companyId,userId);
 	}
 
 	@PutMapping("/users/{userId}/jobs/{jobId}")
@@ -39,33 +39,32 @@ public class JobContoller {
 		return jobService.updateJobById(jobId,userId,jobRequest);
 	} 
 	
-	@DeleteMapping("/jobs/{jobId}")
-	public ResponseEntity<ResponseStructure<JobResponseDto>> delete(@PathVariable int jobId)
+	@DeleteMapping("users/{userId}/jobs/{jobId}")
+	public ResponseEntity<ResponseStructure<JobResponseDto>> delete(@PathVariable int jobId,@PathVariable int userId)
 	{
-		return jobService.deleteJob(jobId);
+		return jobService.deleteJob(jobId,userId);
 	} 
 	
-	@GetMapping("/jobs/{jobId}")
+	@GetMapping("/companies/jobs/{jobId}")
 	public ResponseEntity<ResponseStructure<JobResponseDto>> findByid(@PathVariable int jobId)
 	{
 		return jobService.findJobById(jobId);
 	} 
-	
 
-	@GetMapping("/jobs/{jobTitle}")
-	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findByName(@PathVariable String jobTitle)
+	@GetMapping("/jobs/job-Title/{jobTitle}")
+	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findByTitle(@PathVariable String jobTitle)
 	{
-		return jobService.findJobByName(jobTitle);
+		return jobService.findJobByTitle(jobTitle);
 	} 
 	
-	@GetMapping("/jobs/{jobLocation}")
+	@GetMapping("/jobs/job-Location/{jobLocation}")
 	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findByLocation(@PathVariable String jobLocation)
 	{
 		return jobService.findJobByLocation(jobLocation);
 	} 
 	
-	@GetMapping("/jobs/{jobPackage}")
-	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findByPackage(@PathVariable long jobPackage)
+	@GetMapping("/jobs/job-Package/{jobPackage}")
+	public ResponseEntity<ResponseStructure<List<JobResponseDto>>> findByPackage(@PathVariable String jobPackage)
 	{
 		return jobService.findJobByPackage(jobPackage);
 	}
