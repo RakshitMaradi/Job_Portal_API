@@ -73,7 +73,7 @@ public class CompanyServiceImplementation implements CompanyService {
 			if (userrole.equals(UserRole.EMPLOYER)) 
 			{
 				Company company = convertToCompany(companyRequest, businessType);
-				company.setUser(user);
+				company.setUser(user);                                    
 				companyRepository.save(company);
 				CompanyResponseDto companyResponse = convertToCompanyResponseDto(company);
 				ResponseStructure<CompanyResponseDto> responseStructure = new ResponseStructure<>();
@@ -166,7 +166,7 @@ public class CompanyServiceImplementation implements CompanyService {
 
 		User user = userRepository.findById(userId)
 				    .orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
-		    //Used lamda expression for throwing exception
+		    // Used lamda expression for throwing exception
 			// User not found exception
 
 		if (user.getUserrole().equals(UserRole.EMPLOYER))   // checking if the user is an EMPLOYER

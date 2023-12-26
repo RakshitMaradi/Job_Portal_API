@@ -56,7 +56,7 @@ public class UserServiceImplementation implements UserService {
 		if(optional.isPresent())
 		{
 			User user = converToUser(updateUser,userrole);
-			user.setUserId(userId);
+			user.setUserId(userId);    
 			userRepository.save(user);
 
 			UserResponseDto userResponseDto = convertToUserResponseDto(user);

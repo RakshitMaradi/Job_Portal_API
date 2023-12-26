@@ -1,5 +1,7 @@
 package com.example.jobportal.service;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import com.example.jobportal.requestdto.ResumeRequestDto;
@@ -17,6 +19,8 @@ public interface ResumeService {
 	ResponseEntity<ResponseStructure<ResumeResponseDto>> deleteResumeById(int resumeId, int userId);
 
 	ResponseEntity<ResponseStructure<ResumeResponseDto>> updateResume(@Valid ResumeRequestDto resumeRequest,
-			int userId);
+			int userId, int resumeId);
+
+	ResponseEntity<ResponseStructure<List<ResumeResponseDto>>> findResumeBySkill(int userId, String skillName);
 
 }

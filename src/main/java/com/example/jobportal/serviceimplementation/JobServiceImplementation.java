@@ -83,7 +83,7 @@ public class JobServiceImplementation implements JobService{
 					.orElseThrow(() -> new CompanyNotFoundByIdException("No company present with the id " + companyId));
 
 			Job job = convertToJob(jobRequest);
-			job.setCompany(company);
+			job.setCompany(company);          ///////
 			jobRepository.save(job);
 			JobResponseDto jobResponse = convertJobResponseDto(job);
 
@@ -143,12 +143,10 @@ public class JobServiceImplementation implements JobService{
 	public ResponseEntity<ResponseStructure<JobResponseDto>> updateJobById(int jobId, int userId,
 			@Valid JobRequestDto jobRequest) {
 
-		Optional<User> userOptional = userRepository.findById(userId);
-
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
 
-		if(userOptional.get().getUserrole().equals(UserRole.EMPLOYER))
+		if(user.getUserrole().equals(UserRole.EMPLOYER))
 		{
 			Job existingJob = jobRepository.findById(jobId)
 					.orElseThrow(() -> new JobNotFoundByIdException("Job not found with th id "+jobId));

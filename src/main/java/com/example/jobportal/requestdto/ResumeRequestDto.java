@@ -8,6 +8,15 @@ public class ResumeRequestDto {
 	@NotBlank(message = "Objective cannot be blank")
 	@NotNull(message = "Objective cannot be null")
 	private String objective;
+	private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getObjective() {
 		return objective;

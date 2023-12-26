@@ -1,5 +1,7 @@
 package com.example.jobportal.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,11 +32,11 @@ public class ResumeController {
 		return resumeService.insertResume(resumeRequest,userId);
 	}
 	
-	@PutMapping("/users/{userId}/resumes")
-	public ResponseEntity<ResponseStructure<ResumeResponseDto>> update(@PathVariable int userId,
+	@PutMapping("/users/{userId}/resumes/{resumeId}")
+	public ResponseEntity<ResponseStructure<ResumeResponseDto>> update(@PathVariable int userId,@PathVariable int resumeId,
 			@RequestBody @Valid ResumeRequestDto resumeRequest)
 	{
-		return resumeService.updateResume(resumeRequest,userId);
+		return resumeService.updateResume(resumeRequest,userId,resumeId);
 	}
 	
 	@GetMapping("/users/{userId}/resumes/{resumeId}")
@@ -42,9 +44,15 @@ public class ResumeController {
 	{
 		return resumeService.findResumeById(resumeId,userId);
 	}
+	
+	@GetMapping("/users/{userId}/skills/{skillName}")
+	public ResponseEntity<ResponseStructure<List<ResumeResponseDto>>> findBySkill(@PathVariable int userId,@PathVariable String skillName )
+	{
+		return resumeService.findResumeBySkill(userId,skillName);
+	}
 
 	@DeleteMapping("/users/{userId}/resumes/{resumeId}")
-	public ResponseEntity<ResponseStructure<ResumeResponseDto>> deleteById(@PathVariable int resumeId,int userId)
+	public ResponseEntity<ResponseStructure<ResumeResponseDto>> deleteById(@PathVariable int resumeId,@PathVariable int userId)
 	{
 		return resumeService.deleteResumeById(resumeId,userId);
 	}
