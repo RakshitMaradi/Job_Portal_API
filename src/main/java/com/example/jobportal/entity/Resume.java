@@ -58,4 +58,11 @@ public class Resume {
 	public void setObjective(String objective) {
 		this.objective = objective;
 	}
+	public List<Project> getProjectList() {
+		return projectList;
+	}
+	public void setProjectList(List<Project> projectList) {
+		this.projectList = projectList;
+	}
+	
 }

@@ -1,19 +1,13 @@
-package com.example.jobportal.entity;
+package com.example.jobportal.responsedto;
 
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.jobportal.entity.Resume;
+
 import jakarta.persistence.ManyToOne;
 
-@Entity
-public class Project {
+public class ProjectResponseDto {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int projectId;
 	private String projectName;
 	private Set<String> techStack;
 	private String description;
@@ -70,5 +64,4 @@ public class Project {
 	public void setResume(Resume resume) {
 		this.resume = resume;
 	}
-	
 }

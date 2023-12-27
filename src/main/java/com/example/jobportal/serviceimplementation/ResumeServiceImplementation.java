@@ -53,11 +53,9 @@ public class ResumeServiceImplementation implements ResumeService
 
 	private ResumeResponseDto convertToResumeResponse(Resume resume,int userId)
 	{
-//		Optional<User>  optional= userRepository.findById(userId);
-//		String username = optional.get().getUsername();
 		ResumeResponseDto resumeResponse=new ResumeResponseDto();
 		resumeResponse.setResumeId(resume.getResumeId());
-		resumeResponse.setUsername(resume.getName());
+		resumeResponse.setName(resume.getName());
 		resumeResponse.setObjective(resume.getObjective());
 		return resumeResponse;
 	}
@@ -66,6 +64,7 @@ public class ResumeServiceImplementation implements ResumeService
 	{
 		ResumeResponseDto resumeResponse=new ResumeResponseDto();
 		resumeResponse.setResumeId(resume.getResumeId());
+		resumeResponse.setName(resume.getName());
 		resumeResponse.setObjective(resume.getObjective());
 		return resumeResponse;
 	}
@@ -184,6 +183,7 @@ public class ResumeServiceImplementation implements ResumeService
 					.orElseThrow(()->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
 
 			Resume updatedResume = convertToResume(resumeRequest);
+			updatedResume.setUser(user);
 			updatedResume.setResumeId(existingResume.getResumeId());
 			updatedResume.setSkillsList(existingResume.getSkillsList());
 
@@ -209,36 +209,33 @@ public class ResumeServiceImplementation implements ResumeService
 		}
 	}
 
+
 	@Override
 	public ResponseEntity<ResponseStructure<List<ResumeResponseDto>>> findResumeBySkill(int userId, String skillName) {
-
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundByIdException("User not found with the id " + userId));
-
 		if(user.getUserrole().equals(UserRole.EMPLOYER))
 		{
 			List<Resume> skilledList=new ArrayList<>();
 
 			List<Resume> resumeList = resumeRepository.findAll();
-			if(!resumeList.isEmpty())
+
+			for(Resume resume:resumeList)
 			{
-				for(Resume resume:resumeList)
+				List<Skill> skillsList = resume.getSkillsList();
+				for(Skill skill:skillsList)
 				{
-					List<Skill> skillsList = resume.getSkillsList();
-					for(Skill skill:skillsList)
+					if(skill.getSkillName().equalsIgnoreCase(skillName))
 					{
-						if(skill.getSkillName().equals(skillName.toLowerCase()))
-						{
-							skilledList.add(resume);
-						}
+						skilledList.add(resume);
 					}
 				}
 			}
-			else
+			
+			if(skilledList.isEmpty())
 			{
 				throw new ResumesNotFoundBySkillException("Resumes not found with the given skill "+skillName);
 			}
-
 			List<ResumeResponseDto> resumeResponseList = convertToResumeResponseList(skilledList);
 
 			ResponseStructure<List<ResumeResponseDto>> responseStructure=new ResponseStructure<>();
@@ -252,6 +249,6 @@ public class ResumeServiceImplementation implements ResumeService
 		{
 			throw new UnauthorizedAccessByUserException("Not allowed to access");
 		}
-
 	}
+
 }

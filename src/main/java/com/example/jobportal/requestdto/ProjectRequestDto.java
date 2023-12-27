@@ -1,21 +1,13 @@
-package com.example.jobportal.entity;
+package com.example.jobportal.requestdto;
 
-import java.util.Set;
+import com.example.jobportal.entity.Resume;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
-@Entity
-public class Project {
+public class ProjectRequestDto {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int projectId;
 	private String projectName;
-	private Set<String> techStack;
+	private String[] techStack;
 	private String description;
 	private String website;
 	private String sourceCode;
@@ -23,11 +15,11 @@ public class Project {
 	@ManyToOne
 	private Resume resume;
 
-	public Set<String> getTechStack() {
+	public String[] getTechStack() {
 		return techStack;
 	}
 
-	public void setTechStack(Set<String> techStack) {
+	public void setTechStack(String[] techStack) {
 		this.techStack = techStack;
 	}
 

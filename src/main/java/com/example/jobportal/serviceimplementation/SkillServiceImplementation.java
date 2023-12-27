@@ -52,7 +52,7 @@ public class SkillServiceImplementation implements SkillService{
 
 	private Skill checkSkill(String skill)            // checks if the skill is present in database and adds if not present
 	{
-		Skill oldSkill = skillRepository.findBySkillName(skill.toLowerCase());
+		Skill oldSkill = skillRepository.findBySkillName(skill);
 		if(oldSkill==null)
 		{
 			Skill newSkill=new Skill();
@@ -144,7 +144,6 @@ public class SkillServiceImplementation implements SkillService{
 
 		return new ResponseEntity<ResponseStructure<List<SkillResponseDto>>>(responseStructure, HttpStatus.OK);
 	}
-	
 	
 }
 	
