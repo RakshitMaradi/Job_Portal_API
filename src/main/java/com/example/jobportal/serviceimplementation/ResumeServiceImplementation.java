@@ -80,7 +80,7 @@ public class ResumeServiceImplementation implements ResumeService
 			skillsOption.put("skillsOption",url);
 
 			ResumeResponseDto resumeResponse = convertToResumeResponse(resume);
-			resumeResponse.setSkillsListOption(skillsOption);
+			resumeResponse.setOptions(skillsOption);
 			resumeResponseList.add(resumeResponse);
 		}
 		return resumeResponseList;
@@ -124,13 +124,16 @@ public class ResumeServiceImplementation implements ResumeService
 		{
 			Resume resume = resumeRepository.findById(resumeId).orElseThrow(()->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
 
-			String url="/resumes/"+resumeId+"/get-skills/skills";
-			Map<String,String> skillsOption=new HashMap<>();
-			skillsOption.put("skillsOption",url);
-
+			String url1="/resumes/"+resumeId+"/get-skills/skills";
+			String url2="/resumes/"+resumeId+"/projects";
+			
+			Map<String,String> Options=new HashMap<>();
+			Options.put("skillsOption",url1);
+			Options.put("projectsOption",url2);
+			
 			ResumeResponseDto resumeResponse = convertToResumeResponse(resume,userId);
-			resumeResponse.setSkillsListOption(skillsOption);
-
+			resumeResponse.setOptions(Options);
+			
 			ResponseStructure<ResumeResponseDto> responseStructure=new ResponseStructure<>();
 			responseStructure.setData(resumeResponse);
 			responseStructure.setMessage("Resume found successfully");
@@ -194,7 +197,7 @@ public class ResumeServiceImplementation implements ResumeService
 			Map<String,String> skillsOption=new HashMap<>();
 			skillsOption.put("skillsOption",url);
 
-			resumeResponse.setSkillsListOption(skillsOption);
+			resumeResponse.setOptions(skillsOption);
 
 			ResponseStructure<ResumeResponseDto> responseStructure=new ResponseStructure<>();
 			responseStructure.setData(resumeResponse);

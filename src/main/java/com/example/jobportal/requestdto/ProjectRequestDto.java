@@ -1,25 +1,31 @@
 package com.example.jobportal.requestdto;
 
+import java.util.Set;
+
 import com.example.jobportal.entity.Resume;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.ManyToOne;
 
 public class ProjectRequestDto {
 
 	private String projectName;
-	private String[] techStack;
+	@ElementCollection
+	@CollectionTable(name = "Technologies")
+	private Set<String> techStack;
 	private String description;
 	private String website;
 	private String sourceCode;
 	
 	@ManyToOne
 	private Resume resume;
-
-	public String[] getTechStack() {
+	
+	public Set<String> getTechStack() {
 		return techStack;
 	}
 
-	public void setTechStack(String[] techStack) {
+	public void setTechStack(Set<String> techStack) {
 		this.techStack = techStack;
 	}
 

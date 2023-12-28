@@ -28,6 +28,9 @@ public class Resume {
 	@OneToMany(mappedBy="resume")
 	private List<Project> projectList;
 	
+	@OneToMany(mappedBy="resume")
+	private List<Experience> experienceList;
+	
 	public String getName() {
 		return name;
 	}

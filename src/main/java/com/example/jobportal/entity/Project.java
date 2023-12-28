@@ -2,6 +2,7 @@ package com.example.jobportal.entity;
 
 import java.util.Set;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,13 +16,23 @@ public class Project {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int projectId;
 	private String projectName;
-	private Set<String> techStack;
+	
+	@ElementCollection                // By this tag a new table can be created relating collection and entity
+	private Set<String> techStack;    // A new table gets created with project id and techStack column
 	private String description;
 	private String website;
 	private String sourceCode;
 	
 	@ManyToOne
 	private Resume resume;
+
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
 
 	public Set<String> getTechStack() {
 		return techStack;

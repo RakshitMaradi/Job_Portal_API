@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.jobportal.entity.Project;
 import com.example.jobportal.entity.Resume;
+import com.example.jobportal.exception.ProjectNotFoundByIdException;
 import com.example.jobportal.exception.ResumeNotFoundByIdException;
 import com.example.jobportal.repository.ProjectRepository;
 import com.example.jobportal.repository.ResumeRepository;
@@ -35,7 +36,7 @@ public class ProjectServiceImplementation implements ProjectService{
 	{
 		Project project=new Project();
 		project.setProjectName(projectRequest.getProjectName());
-		project.setTechStack(convertToSet(projectRequest.getTechStack()));
+		project.setTechStack(convertingTocaseInsensitiveSet(projectRequest.getTechStack()));
 		project.setDescription(projectRequest.getDescription());
 		project.setWebsite(projectRequest.getWebsite());
 		project.setSourceCode(projectRequest.getSourceCode());
@@ -46,16 +47,16 @@ public class ProjectServiceImplementation implements ProjectService{
 	{
 		ProjectResponseDto projectResponse=new ProjectResponseDto();
 		projectResponse.setProjectName(project.getProjectName());
-		projectResponse.setTechStack(project.getTechStack());
+		projectResponse.setTechStack(convertToString(project.getTechStack()));
 		projectResponse.setDescription(project.getDescription());
 		projectResponse.setWebsite(project.getWebsite());
 		projectResponse.setSourceCode(project.getSourceCode());
-		projectResponse.setResume(project.getResume());
 		return projectResponse;
 	}
 
-	private Set<String> convertToSet(String[] techStack)
-	{
+	private Set<String> convertingTocaseInsensitiveSet(Set<String> techStack)      // converting Array of Strings to Set<String> 
+	{													      // Stored in a case insensitive order
+															  // Set is chose to avoid repetition 	
 		Set<String> teckSet = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		for(String tech:techStack)
 		{
@@ -64,7 +65,34 @@ public class ProjectServiceImplementation implements ProjectService{
 		return teckSet;
 	}
 
+	private String convertToString(Set<String> techStack)    // converting Set<String> to String of technologies separated by comma
+	{
+		String technolgies="";
+		for(String tech:techStack)
+		{
+			if(technolgies!="")
+			{
+			   technolgies=technolgies+","+tech;
+			}
+			else
+			{
+				technolgies=tech;
+			}	
+		}
+		return technolgies;
+	}
 
+	private List<ProjectResponseDto> convertToProjectResponseList(List<Project> projectList)  
+	{
+	   //converting List<Project> to List<ProjectResponseDto>	
+		 List<ProjectResponseDto> projectResponseList=new ArrayList<>();
+		for(Project project:projectList)
+		{
+			projectResponseList.add(convertToProjectResponse(project));
+		}
+		return projectResponseList;
+	}
+	
 	@Override
 	public ResponseEntity<ResponseStructure<ProjectResponseDto>> insertProject(@Valid ProjectRequestDto projectRequest,
 			int resumeId) {
@@ -77,10 +105,10 @@ public class ProjectServiceImplementation implements ProjectService{
 		project.setResume(resume);
 		projectRepository.save(project);
 
-		List<Project> projectList=new ArrayList<>();  // creating a project list and adding the current project into it
+		List<Project> projectList=new ArrayList<>();      //  creating a project list and adding the current project into it
 		projectList.add(project);
 
-		resume.setProjectList(projectList);           //  setting projectList and persisting the resume object
+		resume.setProjectList(projectList);               //  setting projectList and persisting the resume object
 		resumeRepository.save(resume);
 
 		ProjectResponseDto projectResponse = convertToProjectResponse(project);
@@ -93,8 +121,85 @@ public class ProjectServiceImplementation implements ProjectService{
 		return new ResponseEntity<ResponseStructure<ProjectResponseDto>>(responseStructure, HttpStatus.OK);
 	}
 
+	@Override
+	public ResponseEntity<ResponseStructure<List<ProjectResponseDto>>> getProjectsByResumeId(int resumeId) {
 
+		Resume resume = resumeRepository.findById(resumeId).orElseThrow(()
+				->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
 
+		List<Project> projectList = resume.getProjectList();
+		
+		List<ProjectResponseDto> projectResponseList = convertToProjectResponseList(projectList);
+		
+		ResponseStructure<List<ProjectResponseDto>> responseStructure=new ResponseStructure<>();
+		responseStructure.setData(projectResponseList);
+		responseStructure.setMessage("Projects found successfully");
+		responseStructure.setStatusCode(HttpStatus.OK.value());
+
+		return new ResponseEntity<ResponseStructure<List<ProjectResponseDto>>>(responseStructure, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> updateProjectByResumeId(
+			@Valid ProjectRequestDto projectRequest,int projectId) {
+
+		Project project = projectRepository.findById(projectId).orElseThrow(()
+				->new ProjectNotFoundByIdException("Project not found with id "+projectId));
+		
+		Project updatedProject=convertToProject(projectRequest);
+		
+		updatedProject.setProjectId(project.getProjectId());
+		projectRepository.save(updatedProject);
+		
+		ProjectResponseDto projectResponse = convertToProjectResponse(updatedProject);
+		
+		ResponseStructure<ProjectResponseDto> responseStructure=new ResponseStructure<>();
+		responseStructure.setData(projectResponse);
+		responseStructure.setMessage("Projects found successfully");
+		responseStructure.setStatusCode(HttpStatus.OK.value());
+
+		return new ResponseEntity<ResponseStructure<ProjectResponseDto>>(responseStructure, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> deleteProjectByResumeId(int resumeId, int projectId) {
+
+		
+		Resume resume = resumeRepository.findById(resumeId).orElseThrow(()
+				->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
+		
+		Project project = projectRepository.findById(projectId).orElseThrow(()
+				->new ProjectNotFoundByIdException("Project not found with id "+projectId));
+		
+		
+		projectRepository.delete(project);
+		
+        ProjectResponseDto projectResponse = convertToProjectResponse(project);
+		
+		ResponseStructure<ProjectResponseDto> responseStructure=new ResponseStructure<>();
+		responseStructure.setData(projectResponse);
+		responseStructure.setMessage("Projects found successfully");
+		responseStructure.setStatusCode(HttpStatus.OK.value());
+
+		return new ResponseEntity<ResponseStructure<ProjectResponseDto>>(responseStructure, HttpStatus.OK);
+		
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> getProjectByProjectId(int projectId) {
+
+		Project project = projectRepository.findById(projectId).orElseThrow(()
+				->new ProjectNotFoundByIdException("Project not found with id "+projectId)); 
+		 
+        ProjectResponseDto projectResponse = convertToProjectResponse(project);
+		
+		ResponseStructure<ProjectResponseDto> responseStructure=new ResponseStructure<>();
+		responseStructure.setData(projectResponse);
+		responseStructure.setMessage("Projects found successfully");
+		responseStructure.setStatusCode(HttpStatus.OK.value());
+
+		return new ResponseEntity<ResponseStructure<ProjectResponseDto>>(responseStructure, HttpStatus.OK);
+	}
 
 
 }

@@ -8,14 +8,13 @@ public class ResumeResponseDto {
 	private String name;
 	private String objective;
 	
-	Map<String,String> skillsListOption; 
-	Map<String,String> projectOptions;
+	Map<String,String> Options;
 
-	public Map<String, String> getProjectOptions() {
-		return projectOptions;
+	public Map<String, String> getOptions() {
+		return Options;
 	}
-	public void setProjectOptions(Map<String, String> projectOptions) {
-		this.projectOptions = projectOptions;
+	public void setOptions(Map<String, String> options) {
+		Options = options;
 	}
 	public String getName() {
 		return name;
@@ -23,12 +22,7 @@ public class ResumeResponseDto {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Map<String, String> getSkillsListOption() {
-		return skillsListOption;
-	}
-	public void setSkillsListOption(Map<String, String> skillsListOption) {
-		this.skillsListOption = skillsListOption;
-	}
+
 	public int getResumeId() {
 		return resumeId;
 	}

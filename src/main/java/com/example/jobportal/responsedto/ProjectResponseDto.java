@@ -1,32 +1,23 @@
 package com.example.jobportal.responsedto;
 
-import java.util.Set;
-
-import com.example.jobportal.entity.Resume;
-
-import jakarta.persistence.ManyToOne;
-
 public class ProjectResponseDto {
 
 	private String projectName;
-	private Set<String> techStack;
+	private String techStack;
 	private String description;
 	private String website;
 	private String sourceCode;
 	
-	@ManyToOne
-	private Resume resume;
+	public String getWebsite() {
+		return website;
+	}
 
-	public Set<String> getTechStack() {
+	public String getTechStack() {
 		return techStack;
 	}
 
-	public void setTechStack(Set<String> techStack) {
+	public void setTechStack(String techStack) {
 		this.techStack = techStack;
-	}
-
-	public String getWebsite() {
-		return website;
 	}
 
 	public void setWebsite(String website) {
@@ -55,13 +46,5 @@ public class ProjectResponseDto {
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
-	}
-
-	public Resume getResume() {
-		return resume;
-	}
-
-	public void setResume(Resume resume) {
-		this.resume = resume;
 	}
 }
