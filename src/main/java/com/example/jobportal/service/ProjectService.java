@@ -19,11 +19,9 @@ public interface ProjectService {
 
 	ResponseEntity<ResponseStructure<ProjectResponseDto>> getProjectByProjectId(int projectId);
 
-	ResponseEntity<ResponseStructure<ProjectResponseDto>> updateProjectByResumeId(
-			@Valid ProjectRequestDto projectRequest, int projectId);
+	ResponseEntity<ResponseStructure<ProjectResponseDto>> deleteProjectByResumeId(int projectId);
 
-	ResponseEntity<ResponseStructure<ProjectResponseDto>> deleteProjectByResumeId(int resumeId, int projectId);
-	
-	
+	ResponseEntity<ResponseStructure<ProjectResponseDto>> updateProjectByProjectId(
+			@Valid ProjectRequestDto projectRequest, int projectId, int resumeId);
 
 }

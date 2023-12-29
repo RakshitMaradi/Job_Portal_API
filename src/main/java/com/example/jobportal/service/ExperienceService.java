@@ -19,4 +19,9 @@ public interface ExperienceService {
 
 	ResponseEntity<ResponseStructure<ExperienceResponseDto>> getExperienceByExperienceId(int experienceId);
 
+	ResponseEntity<ResponseStructure<ExperienceResponseDto>> updateExperienceByExperienceId(@Valid ExperienceRequestDto experienceRequest, int experienceId,
+			int resumeId);
+
+	ResponseEntity<ResponseStructure<ExperienceResponseDto>> deleteExperienceByExperienceId(int experienceId);
+
 }

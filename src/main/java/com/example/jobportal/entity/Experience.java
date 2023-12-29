@@ -22,15 +22,15 @@ public class Experience {
 	private String description;
 	private String experience;
 	
+	@ManyToOne
+	private Resume resume;
+
 	public String getExperience() {
 		return experience;
 	}
 	public void setExperience(String experience) {
 		this.experience = experience;
 	}
-	@ManyToOne
-	private Resume resume;
-	
 	public Resume getResume() {
 		return resume;
 	}

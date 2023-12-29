@@ -43,19 +43,18 @@ public class ProjectController {
 	{
 		return projectService.getProjectByProjectId(projectId);
 	}
-	
 
 	@PutMapping("/resumes/{resumeId}/projects/{projectId}")
-	public ResponseEntity<ResponseStructure<ProjectResponseDto>> updateProjectByResumeId(@RequestBody @Valid  ProjectRequestDto projectRequest,
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> updateProjectByProjectId(@RequestBody @Valid  ProjectRequestDto projectRequest,
 			@PathVariable int resumeId,@PathVariable int projectId)
 	{
-		return projectService.updateProjectByResumeId(projectRequest,projectId);
+		return projectService.updateProjectByProjectId(projectRequest,projectId,resumeId);
 	}
 	
 	@DeleteMapping("/resumes/{resumeId}/projects/{projectId}")
-	public ResponseEntity<ResponseStructure<ProjectResponseDto>> deleteProjectByResumeId(@PathVariable int resumeId,@PathVariable int projectId)
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> deleteProjectByResumeId(@PathVariable int projectId)
 	{
-		return projectService.deleteProjectByResumeId(resumeId,projectId);
+		return projectService.deleteProjectByResumeId(projectId);
 	}
 	
 }

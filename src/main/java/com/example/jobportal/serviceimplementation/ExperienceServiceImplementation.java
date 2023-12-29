@@ -41,8 +41,14 @@ public class ExperienceServiceImplementation implements ExperienceService{
 		experience.setEndDate(experienceRequest.getEndDate());
 		experience.setPresent(checkIfPresent(experienceRequest.getEndDate()));
 		experience.setDescription(experienceRequest.getDescription());
-		experience.setExperience(convertToYearAndMonth(experienceRequest.getStartDate(),experienceRequest.getEndDate()));
-
+		if(experienceRequest.getEndDate()!=null)
+		{
+			experience.setExperience(convertToYearAndMonth(experienceRequest.getStartDate(),experienceRequest.getEndDate()));
+		}
+		else 
+		{
+			experience.setExperience("Still working");
+		}
 		return experience;
 	}
 
@@ -51,6 +57,8 @@ public class ExperienceServiceImplementation implements ExperienceService{
 		if (startDate.isAfter(endDate)) {
 			throw new IllegalArgumentException("Start date cannot be after end date");
 		}
+
+
 		Period period=Period.between(startDate, endDate);
 
 		int years = period.getYears();
@@ -65,7 +73,7 @@ public class ExperienceServiceImplementation implements ExperienceService{
 			return years+" years "+months+" months ";
 		}
 	}
-
+	
 	private boolean checkIfPresent(LocalDate endDate) {    // It returns true if endDate is null else false
 
 		if(endDate==null)
@@ -99,7 +107,7 @@ public class ExperienceServiceImplementation implements ExperienceService{
 		}
 		return experienceResponseList;
 	}
-	
+
 	@Override
 	public ResponseEntity<ResponseStructure<ExperienceResponseDto>> insertExperience(
 			@Valid ExperienceRequestDto experienceRequest, int resumeId) {
@@ -121,7 +129,7 @@ public class ExperienceServiceImplementation implements ExperienceService{
 
 		ResponseStructure<ExperienceResponseDto> responseStructure=new ResponseStructure<>();
 		responseStructure.setData(experienceResponse);
-		responseStructure.setMessage("Project inserted successfully");
+		responseStructure.setMessage("Experience inserted successfully");
 		responseStructure.setStatusCode(HttpStatus.OK.value());
 
 		return new ResponseEntity<ResponseStructure<ExperienceResponseDto>>(responseStructure, HttpStatus.OK);
@@ -133,41 +141,80 @@ public class ExperienceServiceImplementation implements ExperienceService{
 
 		Resume resume = resumeRepository.findById(resumeId).orElseThrow(()
 				->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
-		
+
 		List<Experience> experienceList = resume.getExperienceList();
-		
+
 		List<ExperienceResponseDto> experienceResponseList=convertToExperienceResponse(experienceList);
-		
+
 		ResponseStructure<List<ExperienceResponseDto>> responseStructure=new ResponseStructure<>();
 		responseStructure.setData(experienceResponseList);
-		responseStructure.setMessage("Project inserted successfully");
+		responseStructure.setMessage("Experiences found successfully");
 		responseStructure.setStatusCode(HttpStatus.OK.value());
 
 		return new ResponseEntity<ResponseStructure<List<ExperienceResponseDto>>>(responseStructure, HttpStatus.OK);
-		
+
 	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<ExperienceResponseDto>> getExperienceByExperienceId(int experienceId) {
+
+		Experience experience = experienceRepositoy.findById(experienceId).orElseThrow(()
+				->new ExperienceNotFoundByIdException("Experience not found with id "+experienceId));
+
+		ExperienceResponseDto experienceResponse = convertToExperienceResponse(experience);
+
+		ResponseStructure<ExperienceResponseDto> responseStructure=new ResponseStructure<>();
+		responseStructure.setData(experienceResponse);
+		responseStructure.setMessage("Experience found successfully");
+		responseStructure.setStatusCode(HttpStatus.OK.value());
+
+		return new ResponseEntity<ResponseStructure<ExperienceResponseDto>>(responseStructure, HttpStatus.OK);
+
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ExperienceResponseDto>> updateExperienceByExperienceId(@Valid ExperienceRequestDto experienceRequest,
+			int experienceId,int resumeId) {
+
+		Resume resume = resumeRepository.findById(resumeId).orElseThrow(()
+				->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
+
+		Experience existingExperience = experienceRepositoy.findById(experienceId).orElseThrow(()
+				->new ExperienceNotFoundByIdException("Experience not found with id "+experienceId));
+
+		Experience updatedExperience = convertToExperience(experienceRequest);
+		updatedExperience.setResume(resume);
+
+		updatedExperience.setExperienceId(existingExperience.getExperienceId());
+		experienceRepositoy.save(updatedExperience);
+
+		ExperienceResponseDto experienceResponse = convertToExperienceResponse(updatedExperience);
+
+		ResponseStructure<ExperienceResponseDto> responseStructure=new ResponseStructure<>();
+		responseStructure.setData(experienceResponse);
+		responseStructure.setMessage("Experience updated successfully");
+		responseStructure.setStatusCode(HttpStatus.OK.value());
+
+		return new ResponseEntity<ResponseStructure<ExperienceResponseDto>>(responseStructure, HttpStatus.OK);
+
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ExperienceResponseDto>> deleteExperienceByExperienceId(int experienceId) {
 		
 		Experience experience = experienceRepositoy.findById(experienceId).orElseThrow(()
 				->new ExperienceNotFoundByIdException("Experience not found with id "+experienceId));
+
+		experienceRepositoy.delete(experience);
 		
 		ExperienceResponseDto experienceResponse = convertToExperienceResponse(experience);
 
 		ResponseStructure<ExperienceResponseDto> responseStructure=new ResponseStructure<>();
 		responseStructure.setData(experienceResponse);
-		responseStructure.setMessage("Project inserted successfully");
+		responseStructure.setMessage("Experience deleted successfully");
 		responseStructure.setStatusCode(HttpStatus.OK.value());
 
 		return new ResponseEntity<ResponseStructure<ExperienceResponseDto>>(responseStructure, HttpStatus.OK);
 		
 	}
-
-
-
-
-
-
-
 }

@@ -141,13 +141,17 @@ public class ProjectServiceImplementation implements ProjectService{
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<ProjectResponseDto>> updateProjectByResumeId(
-			@Valid ProjectRequestDto projectRequest,int projectId) {
-
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> updateProjectByProjectId(
+			@Valid ProjectRequestDto projectRequest,int projectId,int resumeId) 
+	{
+		Resume resume = resumeRepository.findById(resumeId).orElseThrow(()
+				->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
+		
 		Project project = projectRepository.findById(projectId).orElseThrow(()
 				->new ProjectNotFoundByIdException("Project not found with id "+projectId));
 		
 		Project updatedProject=convertToProject(projectRequest);
+		updatedProject.setResume(resume);
 		
 		updatedProject.setProjectId(project.getProjectId());
 		projectRepository.save(updatedProject);
@@ -156,22 +160,17 @@ public class ProjectServiceImplementation implements ProjectService{
 		
 		ResponseStructure<ProjectResponseDto> responseStructure=new ResponseStructure<>();
 		responseStructure.setData(projectResponse);
-		responseStructure.setMessage("Projects found successfully");
+		responseStructure.setMessage("Project updated successfully");
 		responseStructure.setStatusCode(HttpStatus.OK.value());
 
 		return new ResponseEntity<ResponseStructure<ProjectResponseDto>>(responseStructure, HttpStatus.OK);
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<ProjectResponseDto>> deleteProjectByResumeId(int resumeId, int projectId) {
-
-		
-		Resume resume = resumeRepository.findById(resumeId).orElseThrow(()
-				->new ResumeNotFoundByIdException("Resume not found with id "+resumeId));
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> deleteProjectByResumeId(int projectId) {
 		
 		Project project = projectRepository.findById(projectId).orElseThrow(()
 				->new ProjectNotFoundByIdException("Project not found with id "+projectId));
-		
 		
 		projectRepository.delete(project);
 		
@@ -179,7 +178,7 @@ public class ProjectServiceImplementation implements ProjectService{
 		
 		ResponseStructure<ProjectResponseDto> responseStructure=new ResponseStructure<>();
 		responseStructure.setData(projectResponse);
-		responseStructure.setMessage("Projects found successfully");
+		responseStructure.setMessage("Projects deleted successfully");
 		responseStructure.setStatusCode(HttpStatus.OK.value());
 
 		return new ResponseEntity<ResponseStructure<ProjectResponseDto>>(responseStructure, HttpStatus.OK);
