@@ -1,18 +1,9 @@
-package com.example.jobportal.entity;
+package com.example.jobportal.responsedto;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-
-@Entity
-public class Experience {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ExperienceResponseDto {
+	
 	private int experienceId;
 	private String companyName;
 	private String designation;
@@ -27,15 +18,6 @@ public class Experience {
 	}
 	public void setExperience(String experience) {
 		this.experience = experience;
-	}
-	@ManyToOne
-	private Resume resume;
-	
-	public Resume getResume() {
-		return resume;
-	}
-	public void setResume(Resume resume) {
-		this.resume = resume;
 	}
 	public int getExperienceId() {
 		return experienceId;
@@ -67,7 +49,6 @@ public class Experience {
 	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
-
 	public boolean isPresent() {
 		return present;
 	}

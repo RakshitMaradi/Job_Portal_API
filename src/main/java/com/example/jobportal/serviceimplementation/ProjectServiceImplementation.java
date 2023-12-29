@@ -46,6 +46,7 @@ public class ProjectServiceImplementation implements ProjectService{
 	private ProjectResponseDto convertToProjectResponse(Project project)
 	{
 		ProjectResponseDto projectResponse=new ProjectResponseDto();
+		projectResponse.setProjectId(project.getProjectId());
 		projectResponse.setProjectName(project.getProjectName());
 		projectResponse.setTechStack(convertToString(project.getTechStack()));
 		projectResponse.setDescription(project.getDescription());

@@ -39,7 +39,7 @@ public class ProjectController {
 	}
 	
 	@GetMapping("resumes/projects/{projectId}")
-	public ResponseEntity<ResponseStructure<ProjectResponseDto>> getProjectsByProjectId(@PathVariable int projectId) 
+	public ResponseEntity<ResponseStructure<ProjectResponseDto>> getProjectByProjectId(@PathVariable int projectId) 
 	{
 		return projectService.getProjectByProjectId(projectId);
 	}
@@ -57,7 +57,5 @@ public class ProjectController {
 	{
 		return projectService.deleteProjectByResumeId(resumeId,projectId);
 	}
-	
-	
 	
 }

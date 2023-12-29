@@ -64,6 +64,12 @@ public class Resume {
 	public List<Project> getProjectList() {
 		return projectList;
 	}
+	public List<Experience> getExperienceList() {
+		return experienceList;
+	}
+	public void setExperienceList(List<Experience> experienceList) {
+		this.experienceList = experienceList;
+	}
 	public void setProjectList(List<Project> projectList) {
 		this.projectList = projectList;
 	}

@@ -2,12 +2,21 @@ package com.example.jobportal.responsedto;
 
 public class ProjectResponseDto {
 
+	private int projectId;
 	private String projectName;
 	private String techStack;
 	private String description;
 	private String website;
 	private String sourceCode;
 	
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
+
 	public String getWebsite() {
 		return website;
 	}

@@ -192,5 +192,14 @@ public class ApplicationHandler extends ResponseEntityExceptionHandler{
 		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
 	}
 	
-	
+	@ExceptionHandler(ExperienceNotFoundByIdException.class)
+	public ResponseEntity<ErrorStructure> experienceNotFoundById(ExperienceNotFoundByIdException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Experience not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
 }
