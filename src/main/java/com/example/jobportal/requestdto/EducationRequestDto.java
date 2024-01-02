@@ -1,46 +1,25 @@
-package com.example.jobportal.entity;
+package com.example.jobportal.requestdto;
 
 import java.time.LocalDate;
 
 import com.example.jobportal.enums.DegreeType;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+public class EducationRequestDto {
 
-@Entity
-public class Education {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int educationId;
 	private String instituteName;
 	private DegreeType degreeType;
 	private String degreeName;
 	private String fieldOfStudy;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	private boolean present;
-	private double marks;
-	@ManyToOne
-	private Resume resume;
-
+    private boolean present;
+    private double marks;
+    
+    public double getMarks() {
+		return marks;
+	}
 	public void setMarks(double marks) {
 		this.marks = marks;
-	}
-	public Resume getResume() {
-		return resume;
-	}
-	public void setResume(Resume resume) {
-		this.resume = resume;
-	}
-	public int getEducationId() {
-		return educationId;
-	}
-	public void setEducationId(int educationId) {
-		this.educationId = educationId;
 	}
 	public String getInstituteName() {
 		return instituteName;
@@ -84,8 +63,5 @@ public class Education {
 	public void setPresent(boolean present) {
 		this.present = present;
 	}
-	public double getMarks() {
-		return marks;
-	}
-
+    
 }

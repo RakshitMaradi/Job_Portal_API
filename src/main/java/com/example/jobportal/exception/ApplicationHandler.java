@@ -202,4 +202,29 @@ public class ApplicationHandler extends ResponseEntityExceptionHandler{
 		
 		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
 	}
+	
+	@ExceptionHandler(EducationNotFoundByIdException.class)
+	public ResponseEntity<ErrorStructure> experienceNotFoundById(EducationNotFoundByIdException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Education not found");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.NOT_FOUND);
+	}
+	
+	
+	@ExceptionHandler(DuplicateEducationException.class)
+	public ResponseEntity<ErrorStructure> duplicateEducationException(DuplicateEducationException exception) {
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		errorStructure.setMessage(exception.getMessage());
+		errorStructure.setRootCause("Duplicating education");
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure, HttpStatus.BAD_REQUEST);
+	}
+	
+	
 }

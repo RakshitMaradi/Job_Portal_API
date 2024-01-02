@@ -20,6 +20,9 @@ public class Job {
 	private JobStatus jobStatus;
 	private String jobExperienceRequired;
 	
+	@ManyToOne
+	private Company company;
+	
 	public JobStatus getJobStatus() {
 		return jobStatus;
 	}
@@ -27,9 +30,6 @@ public class Job {
 	public void setJobStatus(JobStatus jobStatus) {
 		this.jobStatus = jobStatus;
 	}
-
-	@ManyToOne
-	private Company company;
 
 	public int getJobId() {
 		return jobId;

@@ -31,6 +31,15 @@ public class Resume {
 	@OneToMany(mappedBy="resume")
 	private List<Experience> experienceList;
 	
+	@OneToMany(mappedBy="resume")
+	private List<Education> educationList;
+	
+	public List<Education> getEducationList() {
+		return educationList;
+	}
+	public void setEducationList(List<Education> educationList) {
+		this.educationList = educationList;
+	}
 	public String getName() {
 		return name;
 	}

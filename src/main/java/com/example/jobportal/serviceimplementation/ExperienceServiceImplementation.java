@@ -183,10 +183,10 @@ public class ExperienceServiceImplementation implements ExperienceService{
 				->new ExperienceNotFoundByIdException("Experience not found with id "+experienceId));
 
 		Experience updatedExperience = convertToExperience(experienceRequest);
-		updatedExperience.setResume(resume);
-
-		updatedExperience.setExperienceId(existingExperience.getExperienceId());
-		experienceRepositoy.save(updatedExperience);
+		updatedExperience.setResume(resume);                                        // setting resume
+		updatedExperience.setExperienceId(existingExperience.getExperienceId());   // setting resumeId
+		
+		experienceRepositoy.save(updatedExperience);          // persisting the updatedExperience object
 
 		ExperienceResponseDto experienceResponse = convertToExperienceResponse(updatedExperience);
 
